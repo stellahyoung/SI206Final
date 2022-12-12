@@ -1,0 +1,2 @@
+Correlation between number of concerts and popularity:
+The correlation coefficient between number of concerts and popularity was r = 0.30311962298385026.
