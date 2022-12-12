@@ -54,7 +54,7 @@ def concert_web():
 
 # Create Concerts table
 def create_concert_table(cur, conn):
-    cur.execute("CREATE TABLE Concert (Artist TEXT PRIMARY KEY, Concerts INT)")
+    cur.execute("CREATE TABLE IF NOT EXISTS Concert (Artist TEXT PRIMARY KEY, Concerts INT)")
     conn.commit()
 
 #Takes the dictionary that we got from concert_web, the cursor, and the connection of the database as inputs. Creates the "Concerts" table. Returns nothing. 
@@ -66,7 +66,7 @@ def add_into_concert_table(cur,conn, add):
     limit = 25 + add
     
     for i in data_key[starting:limit]:
-        cur.execute("INSERT INTO Concert (Artist, Concerts) VALUES (?,?)",(i, dic[i]))
+        cur.execute("INSERT OR IGNORE INTO Concert (Artist, Concerts) VALUES (?,?)",(i, dic[i]))
         
     conn.commit()
 
@@ -383,6 +383,11 @@ def main():
     
 
 main()
+
+
+
+
+
 
 
 
