@@ -28,6 +28,7 @@ def setUpDatabase(db_name):
     conn = sqlite3.connect(path+'/'+db_name)
     cur = conn.cursor()
     return cur, conn
+#Sets up the database with an input(name of choice). Returns the cursor and the connection to the database
 
 # Get concert data in json
 def concert_web():
@@ -42,27 +43,21 @@ def concert_web():
     for i in range(1, len(row)):
         content = row[i].find('td', class_ = 'concert-count')
         for data in content:
-            #print(content)
-            #print(data)
-            # print(countries[i].select("td")[1])
             artist = row[i].select("td")[2].text
             new_data = data.strip()
             numbers = new_data.split(' ')
-            web_data[artist.strip()] = str(numbers[0])
-            #print(web_data)
-
+            web_data[artist.strip()] = str(numbers[0])           
 
     return web_data
+#No inputs. Requests and scrapes songkick website using beautiful soup. 
+# Returns a dictionary that has the artist name and the number of their upcoming concerts
 
 # Create Concerts table
 def create_concert_table(cur, conn):
-    #dic = concert_web()
-    #ata_key = list(dic.keys())
-    #print(data_key)
-    #print(concert_web)
-
     cur.execute("CREATE TABLE Concert (Artist TEXT PRIMARY KEY, Concerts INT)")
     conn.commit()
+
+#Takes the dictionary that we got from concert_web, the cursor, and the connection of the database as inputs. Creates the "Concerts" table. Returns nothing. 
 
 def add_into_concert_table(cur,conn, add): 
     dic = concert_web()
@@ -75,34 +70,7 @@ def add_into_concert_table(cur,conn, add):
         
     conn.commit()
 
-#Taylor Swift Specific
-#def spotify_api():
-#    url = 'https://api.spotify.com/v1/artists/06HL4z0CvFAxyc27GXpf02'
-#    token = 'BQBZWbhyAYpXwcCXnFjc8o3fg_zNcuLpQ4W9Dkkc2qHJqt2ht1Yuaipcd9wiZ8J4YIIm_xXYy_WpQ1bwnf5if9t2QNHrgdRITeF3JlIbkjKYP4HemYK5a5CSJCORmeQNNtaP23Yu3DhSa9Cj4k_H3qHQtH5eZvOy4VTZosqczr_rcHRxQgXzBBS71QVLqjH9zRHioWc'
-#    response = requests.get(url, headers = {"Authorization": f"Bearer {token}"})
- #   data = response.json()
- #   print(data)
- #   return data
-
-
-#takes in list of artist_ids (Taylor Swift, Ariana Grande)
-
-#artists_info = {}
-
-#def spotify_api(artists_info):
-    
-   # for id in artists_info.keys():
-    #    url = ('https://api.spotify.com/v1/artists/' + id)
-        #token = 'BQBZWbhyAYpXwcCXnFjc8o3fg_zNcuLpQ4W9Dkkc2qHJqt2ht1Yuaipcd9wiZ8J4YIIm_xXYy_WpQ1bwnf5if9t2QNHrgdRITeF3JlIbkjKYP4HemYK5a5CSJCORmeQNNtaP23Yu3DhSa9Cj4k_H3qHQtH5eZvOy4VTZosqczr_rcHRxQgXzBBS71QVLqjH9zRHioWc'
-    #    token = artists_info.get(id)
-    #    response = requests.get(url, headers = {"Authorization": f"Bearer {token}"})
-    #    data = response.json()
-    #    print(data)
-
-    #return data
-
-#spotify_api({'06HL4z0CvFAxyc27GXpf02': 'BQCFQjjfHFJI1gCmUp2_gD-TC-0li3f7l_KdIHtLGy2H0eTXXZsb_l9nL2aT0xyMvl2d85jOpJtzT8iTgjU1mYtE7h9kmtNMkihKbgJgdwf_PWYYi25tYZPk6AhEyxbh-pvHo5n5epggYy0Hxx7QWLqaGrDqQq7kXwc4Lc2lsRzM0KSZhYG7q21haW95AtJ4UGVyTcs', 
-#'66CXWjxzNUsdJxJ2JdwvnR':'BQDOLTrCfbnENRfTZjZZKYUW2eJ8ezG5Cgig_iU6L7inxfRkKP_GYQhXu5vWFDY8wumaNh7HuvHEjwbfDqUK5Ro3rNNsn41cHxPHI_aDYu_0wafwRcOFn3hIBe2r4jEg-Z0YtsC6EMCescoFay-56RJ1RfI7mhvbbw1U8UymyqJLQOMjMMUllcxufFuk10Tz2QMpMR8'}
+#Inserts artists' name and number of upcoming concerts into the table. Returns nothing. 
 
 
 def spotify_api():
@@ -122,9 +90,7 @@ def spotify_api():
     #print(spotify_lst)
     return spotify_lst
             
-#spotify_api(['Taylor Swift', 'Ariana Grande', 'Cardi B', 'J. Cole', 'Travis Scott', 'Khalid', 'Meek Mill', 'Ed Sheeran', 'Billie Eilish'])
 
-#print(spotify_api())
 
 
 #creating spotify table
@@ -176,7 +142,8 @@ def join_tables(cur,conn):
     conn.commit()
     
     return results
-    
+
+
 
 
 
@@ -235,7 +202,6 @@ def correlation_calc(list_of_tuple):
 def write_correlation_calc(filename, correlation):
     with open(filename, "w", newline="") as fileout:
         fileout.write("Correlation between number of concerts and popularity:\n")
-        fileout.write("======================================================\n\n")
         fileout.write(f"The correlation coefficient between number of concerts and popularity was r = {correlation}.\n")
         fileout.close()
         
@@ -253,7 +219,6 @@ def create_regression_line(list_of_tuple):
     y = np.array(concert_lst)
 
     slope, intercept, r, p, stderr = scipy.stats.linregress(artist_lst, concert_lst)
-
     line = f'Regression line: y={intercept:.2f}+{slope:.2f}x, r={r:.2f}'
 
     fig, ax = plt.subplots()
@@ -266,7 +231,7 @@ def create_regression_line(list_of_tuple):
     plt.show()
 
 
-def create_histogram(list_of_tuples):
+def create_heatmap(list_of_tuples):
     concerts_list = []
     popularity_list = []
 
@@ -405,12 +370,12 @@ def main():
 
 
 
-    set_up_calculations = join_tables(cur, conn)
-    print(set_up_calculations)
-    calculations = correlation_calc(set_up_calculations)
+    joint_calc_tup = join_tables(cur, conn)
+    print(joint_calc_tup)
+    calculations = correlation_calc(joint_calc_tup)
     write_correlation_calc("calculations.txt", calculations)
-    create_regression_line(set_up_calculations)
-    create_histogram(set_up_calculations)
+    create_regression_line(joint_calc_tup)
+    create_heatmap(joint_calc_tup)
 
 
 
@@ -418,5 +383,8 @@ def main():
     
 
 main()
+
+
+
 
 
